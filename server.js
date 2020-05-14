@@ -8,6 +8,10 @@ const port = 3000
 const parser = new Readline({delimiter: '\r'});
 const { Transform } = require('stream')
 
+const config = require('./config.json')
+
+console.log("server read config file: ",config);
+
 class toTime extends Transform {
     constructor(){
         super()
@@ -15,18 +19,19 @@ class toTime extends Transform {
 
     _transform(chunk, enc, done){
 
-        console.log("in tansform chunk is a", typeof chunk)
 
         let d = new Date()
         
 
         let time = d.getTime();
-        let line = chunk.toString("utf8").split(" ").filter((elem) => elem != ' ');
+        console.log("raw string below:")
+        console.log(chunk.toString("utf8"))
+        let line = chunk.toString("utf8").split(/(\s+)/).filter((elem) => !elem.match(/(\s+)/));
         console.log("string now split to ", line);
         let final = []
         final.push(time);
-        final.push(line[19]);
-        final.push(line[30]);
+        final.push(line[5]);
+        final.push(line[7]);
 
         let finalString = final.toString("utf8") +"\n"
 
@@ -49,7 +54,13 @@ const serialPort = new SerialPort('/dev/ttyUSB0', { baudRate: 9600 }, function (
 }
 )
 
+app.get('/gin', (req, res) => {
 
+
+    res.send(config);
+
+
+})
 
 app.get('/latest', (req, res) => {
 
@@ -62,6 +73,7 @@ app.get('/latest', (req, res) => {
 
         let lines = data.trim().split("\n");
         let bales_data = {};
+        let bales_list = []
 
         for(let i = 0; i < lines.length; i++){
             let item = lines[i].split(",");
@@ -71,10 +83,11 @@ app.get('/latest', (req, res) => {
 
             if(item[0] > cutoff){
 
-                bales_data[i] = {time: item[0], tag: item[1], weight: item[2]};
+                bales_list.push({time: item[0], tag: item[1], weight: item[2]});
             }
         }
 
+        bales_data.bales = {list: bales_list};
 
         res.send(bales_data);
     });
