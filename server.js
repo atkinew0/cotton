@@ -62,9 +62,11 @@ app.get('/gin', (req, res) => {
 
 })
 
-app.get('/latest', (req, res) => {
 
 
+app.get('/latest/:cutoff', (req, res) => {
+
+    let cutoff = parseInt(req.params.cutoff);
 
     file.readFile('bales.txt', 'utf8', (err, data) => {
 
@@ -78,8 +80,8 @@ app.get('/latest', (req, res) => {
         for(let i = 0; i < lines.length; i++){
             let item = lines[i].split(",");
 
-            let d = new Date()
-            let cutoff = d.getTime() - (1000 * 60 * 60);        //in response to GET /latest send bales from previous 1 hr
+            // let d = new Date()
+            // let cutoff = d.getTime() - (1000 * 60 * 60);        //in response to GET /latest send bales from previous 1 hr
 
             if(item[0] > cutoff){
 
