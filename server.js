@@ -68,7 +68,7 @@ app.get('/latest/:cutoff', (req, res) => {
 
     let cutoff = parseInt(req.params.cutoff);
 
-    file.readFile('bales.txt', 'utf8', (err, data) => {
+    file.readFile('mock_bales.txt', 'utf8', (err, data) => {
 
         if (err) console.log("Read error:", err);
 
